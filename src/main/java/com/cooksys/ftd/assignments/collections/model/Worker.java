@@ -1,7 +1,6 @@
 package com.cooksys.ftd.assignments.collections.model;
 
-import com.cooksys.ftd.assignments.collections.util.MissingImplementationException;
-
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -14,6 +13,8 @@ import java.util.List;
 public class Worker implements Employee {
 
     // TODO: Does this class need private fields? If so, add them here
+	private String name;
+	private Manager manager;
 
     /**
      * TODO: Implement this constructor.
@@ -21,7 +22,8 @@ public class Worker implements Employee {
      * @param name the name of the worker to be created
      */
     public Worker(String name) {
-        throw new MissingImplementationException();
+        this.name = name;
+        manager = null;
     }
 
     /**
@@ -31,37 +33,32 @@ public class Worker implements Employee {
      * @param manager the direct manager of the worker to be created
      */
     public Worker(String name, Manager manager) {
-        throw new MissingImplementationException();
+        this.name = name;
+        this.manager = manager;
     }
 
     /**
-     * TODO: Implement this getter.
-     *
      * @return the name of the worker
      */
     @Override
     public String getName() {
-        throw new MissingImplementationException();
+        return name;
     }
 
     /**
-     * TODO: Implement this getter.
-     *
      * @return {@code true} if this worker has a manager, or {@code false} otherwise
      */
     @Override
     public boolean hasManager() {
-        throw new MissingImplementationException();
+        return manager != null;
     }
 
     /**
-     * TODO: Implement this getter.
-     *
      * @return the manager of this worker, or null if it has none
      */
     @Override
     public Manager getManager() {
-        throw new MissingImplementationException();
+        return manager;
     }
 
     /**
@@ -79,8 +76,45 @@ public class Worker implements Employee {
      */
     @Override
     public List<Manager> getChainOfCommand() {
-        throw new MissingImplementationException();
+        List<Manager> managerList = new ArrayList<>();
+        Manager m = manager;
+        while (m != null) {
+        	managerList.add(m);
+        	m = m.getManager();
+        }
+        return managerList;
     }
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((manager == null) ? 0 : manager.hashCode());
+		result = prime * result + ((name == null) ? 0 : name.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Worker other = (Worker) obj;
+		if (manager == null) {
+			if (other.manager != null)
+				return false;
+		} else if (!manager.equals(other.manager))
+			return false;
+		if (name == null) {
+			if (other.name != null)
+				return false;
+		} else if (!name.equals(other.name))
+			return false;
+		return true;
+	}
 
     // TODO: Does this class need custom .equals() and .hashcode() methods? If so, implement them here.
 
