@@ -46,24 +46,14 @@ public class OrgChart {
 		if (employee == null || hasEmployee(employee)) {
 			return false;
 		}
-		if (employee.hasManager() && employee.getManager() != null) {
-			if (!hasEmployee(employee.getManager())) {//what if it is a manager??? add to keySet???
+		if (employee.hasManager()) {
+			if (!fullHierarchy.containsKey(employee.getManager())) {
 				addEmployee(employee.getManager());
 			}
-			if (fullHierarchy.get(employee.getManager()) == null) {
-				System.out.println(fullHierarchy.containsKey(employee.getManager()));
-				System.out.println(hasEmployee(employee.getManager()));
-				System.out.println("its NULL!!!!!!!!!!!!!");
+			if (employee instanceof Manager) {
+				Set<Employee> emptySet = new HashSet<>();
+				fullHierarchy.put((Manager) employee, emptySet);
 			}
-			
-//			if (!fullHierarchy.containsKey(employee.getManager()) && employee instanceof Manager) {
-//				Set<Employee> emptySet = new HashSet<>();
-//				fullHierarchy.put((Manager) employee, emptySet);
-//			}
-//			if (fullHierarchy.get(employee.getManager()) == null) {
-//				Set<Employee> emptySet = new HashSet<>();
-//				fullHierarchy.put(employee.getManager(), emptySet);
-//			}
 			fullHierarchy.get(employee.getManager()).add(employee);
 			return true;
 		} else if (employee instanceof Manager) {
@@ -86,7 +76,16 @@ public class OrgChart {
 	 *         false otherwise
 	 */
 	public boolean hasEmployee(Employee employee) {
-		return getAllEmployees().contains(employee);
+		//faster to deal with manager/worker specifically
+		if (employee instanceof Manager) {
+			return fullHierarchy.containsKey(employee);
+		} else {
+			//check if employee has a manager, and if that manager is in the keySet
+			if (employee.hasManager() && fullHierarchy.containsKey(employee.getManager())) {
+				return fullHierarchy.get(employee.getManager()).contains(employee);
+			}
+			return false;
+		}
 	}
 
 	/**
@@ -122,7 +121,6 @@ public class OrgChart {
 	 *         if no {@code Manager}s have been added to the {@code OrgChart}
 	 */
 	public Set<Manager> getAllManagers() {
-		//return fullHierarchy.keySet();
 		return new HashSet<>(fullHierarchy.keySet());
 	}
 
@@ -149,6 +147,11 @@ public class OrgChart {
 	 *         are no subordinates for the given {@code Manager}
 	 */
 	public Set<Employee> getDirectSubordinates(Manager manager) {
+		//check if manager is in OrgChart first
+		if (!hasEmployee(manager)) {
+			Set<Employee> emptySet = new HashSet<>();
+			return emptySet;
+		}
 		return new HashSet<>(fullHierarchy.get(manager));
 	}
 
